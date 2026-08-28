@@ -1,0 +1,14 @@
+# uv / Python
+.venv/
+__pycache__/
+*.pyc
+.ruff_cache/
+uv.lock
+
+# generated outputs
+out/
+*_observations.csv
+*_species.csv
+
+# OS
+.DS_Store

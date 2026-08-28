@@ -1,0 +1,20 @@
+[project]
+name = "sapa-wildlife"
+version = "0.1.0"
+description = "Pull iNaturalist observations along a running route (GPX corridor). Built for the VMM 100-mile ultra around Sa Pa, Vietnam."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "requests>=2.31",
+    "shapely>=2.0",
+    "pyproj>=3.6",
+]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.6",
+]
+
+# Deps-only project: nothing to build/install, uv just manages the venv.
+[tool.uv]
+package = false
