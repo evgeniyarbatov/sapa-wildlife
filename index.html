@@ -1,0 +1,386 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sa Pa Wildlife</title>
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+<style>
+  :root {
+    --bg: #f7f6f2;
+    --panel: #ffffff;
+    --text: #1c1b18;
+    --muted: #6b6a63;
+    --border: #e4e2da;
+    --accent: #2f6b3a;
+    --accent-weak: #e7f0e6;
+    --chip: #efece2;
+    --link: #1d5da0;
+    --shadow: 0 1px 2px rgba(0,0,0,0.05);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #16160f;
+      --panel: #1e1d17;
+      --text: #ece9df;
+      --muted: #a6a394;
+      --border: #34322a;
+      --accent: #7fc98c;
+      --accent-weak: #223324;
+      --chip: #2a291f;
+      --link: #7db8e8;
+      --shadow: 0 1px 2px rgba(0,0,0,0.3);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #16160f;
+    --panel: #1e1d17;
+    --text: #ece9df;
+    --muted: #a6a394;
+    --border: #34322a;
+    --accent: #7fc98c;
+    --accent-weak: #223324;
+    --chip: #2a291f;
+    --link: #7db8e8;
+    --shadow: 0 1px 2px rgba(0,0,0,0.3);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  header {
+    padding: 28px 20px 16px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  h1 {
+    margin: 0 0 4px;
+    font-size: 1.6rem;
+    letter-spacing: -0.01em;
+  }
+  header p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.92rem;
+  }
+
+  .wrap { max-width: 1100px; margin: 0 auto; padding: 0 20px 60px; }
+
+  nav.tabs {
+    display: flex;
+    gap: 6px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 16px;
+    overflow-x: auto;
+  }
+  nav.tabs button {
+    appearance: none;
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-size: 0.92rem;
+    font-weight: 600;
+    padding: 10px 14px;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    white-space: nowrap;
+  }
+  nav.tabs button.active {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+  }
+  nav.tabs button:hover { color: var(--text); }
+
+  .toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 14px;
+  }
+  .toolbar input[type="search"] {
+    flex: 1 1 240px;
+    min-width: 180px;
+    padding: 9px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--panel);
+    color: var(--text);
+    font-size: 0.92rem;
+  }
+  .toolbar select {
+    padding: 9px 10px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--panel);
+    color: var(--text);
+    font-size: 0.88rem;
+  }
+  .count {
+    color: var(--muted);
+    font-size: 0.82rem;
+    white-space: nowrap;
+  }
+
+  .table-scroll {
+    overflow-x: auto;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--panel);
+    box-shadow: var(--shadow);
+  }
+  table { border-collapse: collapse; width: 100%; font-size: 0.86rem; }
+  thead th {
+    position: sticky;
+    top: 0;
+    background: var(--panel);
+    text-align: left;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    white-space: nowrap;
+    color: var(--muted);
+    font-weight: 600;
+    user-select: none;
+  }
+  thead th:hover { color: var(--text); }
+  thead th .arrow { opacity: 0.5; margin-left: 4px; font-size: 0.75em; }
+  tbody td {
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+    max-width: 320px;
+  }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover { background: var(--accent-weak); }
+
+  .thumb {
+    width: 44px;
+    height: 44px;
+    border-radius: 6px;
+    object-fit: cover;
+    display: block;
+    background: var(--chip);
+  }
+  a { color: var(--link); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  .chip {
+    display: inline-block;
+    background: var(--chip);
+    color: var(--text);
+    border-radius: 999px;
+    padding: 2px 9px;
+    font-size: 0.78rem;
+    white-space: nowrap;
+  }
+  .sci { font-style: italic; color: var(--muted); }
+  .empty {
+    padding: 40px 12px;
+    text-align: center;
+    color: var(--muted);
+  }
+  footer {
+    max-width: 1100px;
+    margin: 30px auto 0;
+    padding: 0 20px 40px;
+    color: var(--muted);
+    font-size: 0.8rem;
+  }
+  footer a { color: var(--muted); text-decoration: underline; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Sa Pa Wildlife</h1>
+  <p>Field reference and iNaturalist observations for the Vietnam Mountain Marathon 100-miler (Hoàng Liên National Park).</p>
+</header>
+
+<div class="wrap">
+  <nav class="tabs" id="tabs">
+    <button data-tab="reference" class="active">Field reference</button>
+    <button data-tab="species">Species along the route</button>
+    <button data-tab="observations">Raw observations</button>
+  </nav>
+
+  <div class="toolbar">
+    <input type="search" id="search" placeholder="Search…">
+    <select id="groupFilter"><option value="">All groups</option></select>
+    <span class="count" id="count"></span>
+  </div>
+
+  <div class="table-scroll">
+    <table id="table">
+      <thead><tr id="headRow"></tr></thead>
+      <tbody id="body"></tbody>
+    </table>
+    <div class="empty" id="empty" style="display:none">No rows match.</div>
+  </div>
+</div>
+
+<footer>
+  Data: hand-curated field reference plus observations pulled from <a href="https://www.inaturalist.org" target="_blank" rel="noopener">iNaturalist</a> (contributor-licensed — check per-observation licences before reuse).
+  Source: <a href="https://github.com/evgeniyarbatov/sapa-wildlife" target="_blank" rel="noopener">sapa-wildlife</a>.
+</footer>
+
+<script>
+const DATASETS = {
+  reference: {
+    url: 'reference/sapa_wildlife_field_reference.csv',
+    columns: ['group','common_name','vietnamese_name','scientific_name','field_notes','habitat_zone','notable','spot_chance'],
+    labels: { common_name: 'Common name', vietnamese_name: 'Vietnamese name', scientific_name: 'Scientific name', field_notes: 'Field notes', habitat_zone: 'Habitat zone', spot_chance: 'Spot chance' },
+    render: {
+      scientific_name: v => v ? `<span class="sci">${esc(v)}</span>` : '',
+      spot_chance: v => v ? `<span class="chip">${esc(v)}</span>` : '',
+    },
+    searchCols: ['common_name','vietnamese_name','scientific_name','field_notes','habitat_zone','notable'],
+    defaultSort: { col: 'group', dir: 'asc' },
+  },
+  species: {
+    url: 'out/vmm_species.csv',
+    columns: ['example_photo','group','common_name','scientific_name','observations','sep_observations','peak_months','coords_obscured','example_obs'],
+    labels: { example_photo: '', common_name: 'Common name', scientific_name: 'Scientific name', observations: 'Obs.', sep_observations: 'Sep obs.', peak_months: 'Peak months', coords_obscured: 'Obscured', example_obs: 'Example' },
+    render: {
+      example_photo: v => v ? `<img class="thumb" src="${esc(v)}" loading="lazy" alt="">` : '',
+      scientific_name: v => v ? `<span class="sci">${esc(v)}</span>` : '',
+      coords_obscured: v => (v === '1' || v === 'yes') ? '<span class="chip">obscured</span>' : '',
+      example_obs: v => v ? `<a href="${esc(v)}" target="_blank" rel="noopener">iNaturalist ↗</a>` : '',
+    },
+    searchCols: ['common_name','scientific_name','group','peak_months'],
+    defaultSort: { col: 'observations', dir: 'desc', numeric: true },
+  },
+  observations: {
+    url: 'out/vmm_observations.csv',
+    columns: ['photo_url','group','common_name','scientific_name','observed_on','lat','lon','coords_obscured','obs_url'],
+    labels: { photo_url: '', common_name: 'Common name', scientific_name: 'Scientific name', observed_on: 'Observed on', coords_obscured: 'Obscured', obs_url: 'Link' },
+    render: {
+      photo_url: v => v ? `<img class="thumb" src="${esc(v)}" loading="lazy" alt="">` : '',
+      scientific_name: v => v ? `<span class="sci">${esc(v)}</span>` : '',
+      coords_obscured: v => (v === '1' || v === 'yes') ? '<span class="chip">obscured</span>' : '',
+      obs_url: v => v ? `<a href="${esc(v)}" target="_blank" rel="noopener">iNaturalist ↗</a>` : '',
+    },
+    searchCols: ['common_name','scientific_name','group'],
+    defaultSort: { col: 'observed_on', dir: 'desc' },
+  },
+};
+
+let active = 'reference';
+let rows = [];
+let sortState = {};
+const cache = {};
+
+function esc(s) {
+  return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+async function loadDataset(name) {
+  if (cache[name]) return cache[name];
+  const res = await fetch(DATASETS[name].url);
+  const text = await res.text();
+  const parsed = Papa.parse(text, { header: true, skipEmptyLines: true });
+  cache[name] = parsed.data;
+  return parsed.data;
+}
+
+function populateGroupFilter(data) {
+  const sel = document.getElementById('groupFilter');
+  sel.innerHTML = '<option value="">All groups</option>';
+  const groups = [...new Set(data.map(r => r.group).filter(Boolean))].sort();
+  for (const g of groups) {
+    const opt = document.createElement('option');
+    opt.value = g; opt.textContent = g;
+    sel.appendChild(opt);
+  }
+}
+
+function sortRows(data, col, dir, numeric) {
+  const mult = dir === 'asc' ? 1 : -1;
+  return [...data].sort((a, b) => {
+    let av = a[col] ?? '', bv = b[col] ?? '';
+    if (numeric) { av = parseFloat(av) || 0; bv = parseFloat(bv) || 0; return (av - bv) * mult; }
+    return String(av).localeCompare(String(bv)) * mult;
+  });
+}
+
+function renderHead(config) {
+  const headRow = document.getElementById('headRow');
+  headRow.innerHTML = '';
+  for (const col of config.columns) {
+    const th = document.createElement('th');
+    const label = config.labels[col] ?? (col.charAt(0).toUpperCase() + col.slice(1).replace(/_/g, ' '));
+    th.dataset.col = col;
+    th.innerHTML = label + (sortState.col === col ? `<span class="arrow">${sortState.dir === 'asc' ? '▲' : '▼'}</span>` : '');
+    th.addEventListener('click', () => {
+      const numeric = ['lat','lon','observations','sep_observations'].includes(col);
+      sortState = { col, dir: sortState.col === col && sortState.dir === 'asc' ? 'desc' : 'asc', numeric };
+      renderBody();
+      renderHead(config);
+    });
+    headRow.appendChild(th);
+  }
+}
+
+function renderBody() {
+  const config = DATASETS[active];
+  const search = document.getElementById('search').value.trim().toLowerCase();
+  const group = document.getElementById('groupFilter').value;
+
+  let data = rows;
+  if (group) data = data.filter(r => r.group === group);
+  if (search) {
+    data = data.filter(r => config.searchCols.some(c => String(r[c] ?? '').toLowerCase().includes(search)));
+  }
+  if (sortState.col) {
+    data = sortRows(data, sortState.col, sortState.dir, sortState.numeric);
+  }
+
+  const body = document.getElementById('body');
+  const empty = document.getElementById('empty');
+  body.innerHTML = '';
+  document.getElementById('count').textContent = `${data.length.toLocaleString()} / ${rows.length.toLocaleString()} rows`;
+
+  if (!data.length) {
+    empty.style.display = 'block';
+    return;
+  }
+  empty.style.display = 'none';
+
+  const frag = document.createDocumentFragment();
+  for (const r of data) {
+    const tr = document.createElement('tr');
+    for (const col of config.columns) {
+      const td = document.createElement('td');
+      const renderer = config.render[col];
+      td.innerHTML = renderer ? renderer(r[col]) : esc(r[col]);
+      tr.appendChild(td);
+    }
+    frag.appendChild(tr);
+  }
+  body.appendChild(frag);
+}
+
+async function switchTab(name) {
+  active = name;
+  document.querySelectorAll('#tabs button').forEach(b => b.classList.toggle('active', b.dataset.tab === name));
+  const config = DATASETS[name];
+  sortState = config.defaultSort ? { ...config.defaultSort } : {};
+  document.getElementById('search').value = '';
+  rows = await loadDataset(name);
+  populateGroupFilter(rows);
+  renderHead(config);
+  renderBody();
+}
+
+document.querySelectorAll('#tabs button').forEach(b => b.addEventListener('click', () => switchTab(b.dataset.tab)));
+document.getElementById('search').addEventListener('input', renderBody);
+document.getElementById('groupFilter').addEventListener('change', renderBody);
+
+switchTab('reference');
+</script>
+</body>
+</html>
