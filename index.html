@@ -78,16 +78,6 @@
     align-items: center;
     margin-bottom: 14px;
   }
-  .toolbar input[type="search"] {
-    flex: 1 1 240px;
-    min-width: 180px;
-    padding: 9px 12px;
-    border-radius: 8px;
-    border: 1px solid var(--border);
-    background: var(--panel);
-    color: var(--text);
-    font-size: 0.92rem;
-  }
   .toolbar select {
     padding: 9px 10px;
     border-radius: 8px;
@@ -135,8 +125,8 @@
   tbody tr:hover { background: var(--accent-weak); }
 
   .thumb {
-    width: 220px;
-    height: 220px;
+    width: 360px;
+    height: 360px;
     border-radius: 8px;
     object-fit: cover;
     display: block;
@@ -173,12 +163,11 @@
 <body>
 <header>
   <h1>Sa Pa Wildlife</h1>
-  <p>iNaturalist observations along the route for the Vietnam Mountain Marathon 100-miler (Hoàng Liên National Park).</p>
+  <p>iNaturalist observations along the route for the Vietnam Mountain Marathon 100-miler.</p>
 </header>
 
 <div class="wrap">
   <div class="toolbar">
-    <input type="search" id="search" placeholder="Search…">
     <select id="groupFilter"><option value="">All groups</option></select>
     <span class="count" id="count"></span>
   </div>
@@ -208,7 +197,6 @@ const CONFIG = {
     coords_obscured: v => (v === '1' || v === 'yes') ? '<span class="chip">obscured</span>' : '',
     obs_url: v => v ? `<a href="${esc(v)}" target="_blank" rel="noopener">iNaturalist ↗</a>` : '',
   },
-  searchCols: ['common_name','scientific_name','group'],
   defaultSort: { col: 'observed_on', dir: 'desc' },
 };
 
@@ -265,14 +253,10 @@ function renderHead() {
 }
 
 function renderBody() {
-  const search = document.getElementById('search').value.trim().toLowerCase();
   const group = document.getElementById('groupFilter').value;
 
   let data = rows;
   if (group) data = data.filter(r => r.group === group);
-  if (search) {
-    data = data.filter(r => CONFIG.searchCols.some(c => String(r[c] ?? '').toLowerCase().includes(search)));
-  }
   if (sortState.col) {
     data = sortRows(data, sortState.col, sortState.dir, sortState.numeric);
   }
@@ -309,7 +293,6 @@ async function init() {
   renderBody();
 }
 
-document.getElementById('search').addEventListener('input', renderBody);
 document.getElementById('groupFilter').addEventListener('change', renderBody);
 
 init();

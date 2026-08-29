@@ -163,7 +163,7 @@ def obs_coords(obs):
     return None
 
 
-def photo_url(obs, size="medium"):
+def photo_url(obs, size="large"):
     photos = obs.get("photos") or []
     if photos and photos[0].get("url"):
         return photos[0]["url"].replace("square", size)
