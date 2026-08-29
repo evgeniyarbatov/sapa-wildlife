@@ -189,8 +189,8 @@
 <script>
 const CONFIG = {
   url: 'data/vmm_observations.csv',
-  columns: ['photo_url','group','common_name','scientific_name','observed_on','lat','lon','coords_obscured','obs_url'],
-  labels: { photo_url: '', common_name: 'Common name', scientific_name: 'Scientific name', observed_on: 'Observed on', coords_obscured: 'Obscured', obs_url: 'Link' },
+  columns: ['photo_url','group','common_name','scientific_name','observed_on','obs_url'],
+  labels: { photo_url: '', common_name: 'Common name', scientific_name: 'Scientific name', observed_on: 'Observed on', obs_url: 'Link' },
   render: {
     photo_url: v => v ? `<img class="thumb" src="${esc(v)}" loading="lazy" alt="">` : '',
     scientific_name: v => v ? `<span class="sci">${esc(v)}</span>` : '',
@@ -243,8 +243,7 @@ function renderHead() {
     th.dataset.col = col;
     th.innerHTML = label + (sortState.col === col ? `<span class="arrow">${sortState.dir === 'asc' ? '▲' : '▼'}</span>` : '');
     th.addEventListener('click', () => {
-      const numeric = ['lat','lon'].includes(col);
-      sortState = { col, dir: sortState.col === col && sortState.dir === 'asc' ? 'desc' : 'asc', numeric };
+      sortState = { col, dir: sortState.col === col && sortState.dir === 'asc' ? 'desc' : 'asc' };
       renderBody();
       renderHead();
     });
