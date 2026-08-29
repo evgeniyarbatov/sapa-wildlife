@@ -284,16 +284,21 @@ async function loadDataset() {
   const res = await fetch(CONFIG.url);
   const text = await res.text();
   const parsed = Papa.parse(text, { header: true, skipEmptyLines: true });
-  return dedupeByName(parsed.data);
+  return dedupeByName(parsed.data).filter(r => r.photo_url);
 }
 
 function populateGroupFilter(data) {
   const sel = document.getElementById('groupFilter');
-  sel.innerHTML = '<option value="">All groups</option>';
-  const groups = [...new Set(data.map(r => r.group).filter(Boolean))].sort();
-  for (const g of groups) {
+  const counts = new Map();
+  for (const r of data) {
+    if (!r.group) continue;
+    counts.set(r.group, (counts.get(r.group) || 0) + 1);
+  }
+  const groups = [...counts.entries()].sort((a, b) => b[1] - a[1]);
+  sel.innerHTML = `<option value="">All groups (${data.length})</option>`;
+  for (const [g, count] of groups) {
     const opt = document.createElement('option');
-    opt.value = g; opt.textContent = g;
+    opt.value = g; opt.textContent = `${g} (${count})`;
     sel.appendChild(opt);
   }
 }
