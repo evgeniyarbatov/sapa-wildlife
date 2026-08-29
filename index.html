@@ -189,7 +189,7 @@
 <script>
 const CONFIG = {
   url: 'data/vmm_observations.csv',
-  columns: ['photo_url','group','common_name','obs_url'],
+  columns: ['photo_url','common_name','obs_url'],
   labels: { photo_url: '', common_name: 'Name', obs_url: 'Link' },
   render: {
     photo_url: v => v ? `<img class="thumb" src="${esc(v)}" loading="lazy" alt="">` : '',
