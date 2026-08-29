@@ -16,12 +16,11 @@ Two things live here:
 ## Quickstart (uv)
 
 ```bash
-# zero-config: pull snakes recorded in the Sa Pa bounding box (no GPX needed)
-make bbox TAXON=snakes
+# zero-config: pull observations recorded in the Sa Pa bounding box (no GPX needed)
+make bbox TAXON=birds
 
 # the real thing: clip to your race GPX (from VMM registration)
-make snakes GPX=vmm_100mi.gpx
-make run    GPX=vmm_100mi.gpx TAXON=birds BUFFER=2.0
+make run GPX=vmm_100mi.gpx TAXON=birds BUFFER=2.0
 ```
 
 `uv` handles the Python version and dependencies — no manual venv.
@@ -34,11 +33,10 @@ make run    GPX=vmm_100mi.gpx TAXON=birds BUFFER=2.0
 | `make install`| create the venv + install deps (`uv sync`) |
 | `make bbox`   | query the whole Sa Pa box — no GPX required |
 | `make run`    | clip observations to a GPX corridor |
-| `make snakes` | shortcut for `run TAXON=snakes` |
 | `make lint` / `make fmt` | ruff |
 | `make clean`  | delete generated CSVs |
 
-Each run writes two files under `out/`: a raw `*_observations.csv` and a
+Each run writes two files under `data/`: a raw `*_observations.csv` and a
 `*_species.csv` summary sorted by frequency, with a **`sep_observations`** column
 (the race is mid-September) and month histogram.
 

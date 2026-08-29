@@ -6,11 +6,11 @@ __pycache__/
 uv.lock
 
 # generated outputs
-out/*
+data/*
 *_observations.csv
 *_species.csv
-!out/vmm_observations.csv
-!out/vmm_species.csv
+!data/vmm_observations.csv
+!data/vmm_species.csv
 
 # OS
 .DS_Store

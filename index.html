@@ -242,7 +242,7 @@ const DATASETS = {
     defaultSort: { col: 'group', dir: 'asc' },
   },
   species: {
-    url: 'out/vmm_species.csv',
+    url: 'data/vmm_species.csv',
     columns: ['example_photo','group','common_name','scientific_name','observations','sep_observations','peak_months','coords_obscured','example_obs'],
     labels: { example_photo: '', common_name: 'Common name', scientific_name: 'Scientific name', observations: 'Obs.', sep_observations: 'Sep obs.', peak_months: 'Peak months', coords_obscured: 'Obscured', example_obs: 'Example' },
     render: {
@@ -255,7 +255,7 @@ const DATASETS = {
     defaultSort: { col: 'observations', dir: 'desc', numeric: true },
   },
   observations: {
-    url: 'out/vmm_observations.csv',
+    url: 'data/vmm_observations.csv',
     columns: ['photo_url','group','common_name','scientific_name','observed_on','lat','lon','coords_obscured','obs_url'],
     labels: { photo_url: '', common_name: 'Common name', scientific_name: 'Scientific name', observed_on: 'Observed on', coords_obscured: 'Obscured', obs_url: 'Link' },
     render: {
