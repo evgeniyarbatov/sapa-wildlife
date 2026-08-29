@@ -119,14 +119,14 @@
     padding: 8px 12px;
     border-bottom: 1px solid var(--border);
     vertical-align: top;
-    max-width: 320px;
+    max-width: 480px;
   }
   tbody tr:last-child td { border-bottom: none; }
   tbody tr:hover { background: var(--accent-weak); }
 
   .thumb {
-    width: 220px;
-    height: 220px;
+    width: 400px;
+    height: 400px;
     border-radius: 8px;
     object-fit: cover;
     display: block;
@@ -206,11 +206,23 @@ function esc(s) {
   return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
 
+function dedupeByName(data) {
+  const latest = new Map();
+  for (const r of data) {
+    const key = r.scientific_name || r.common_name;
+    const prev = latest.get(key);
+    if (!prev || (r.observed_on || '') > (prev.observed_on || '')) {
+      latest.set(key, r);
+    }
+  }
+  return [...latest.values()];
+}
+
 async function loadDataset() {
   const res = await fetch(CONFIG.url);
   const text = await res.text();
   const parsed = Papa.parse(text, { header: true, skipEmptyLines: true });
-  return parsed.data;
+  return dedupeByName(parsed.data);
 }
 
 function populateGroupFilter(data) {

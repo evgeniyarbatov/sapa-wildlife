@@ -8,9 +8,7 @@ uv.lock
 # generated outputs
 data/*
 *_observations.csv
-*_species.csv
 !data/vmm_observations.csv
-!data/vmm_species.csv
 
 # OS
 .DS_Store

@@ -16,7 +16,7 @@ make run GPX=vmm_100mi.gpx [TAXON=birds] [BUFFER=1.5]   # clip to a GPX corridor
 make bbox BBOX="lat lon lat lon" [TAXON=birds]  # raw bbox query, no GPX
 make lint                                       # ruff check
 make fmt                                        # ruff format
-make clean                                      # rm data/ and stray *_observations.csv / *_species.csv
+make clean                                      # rm data/ and stray *_observations.csv
 ```
 
 `TAXON` must be one of the keys in `TAXA` in `inat_corridor.py` (`snakes`, `reptiles`,
@@ -37,16 +37,15 @@ scheduling):
 4. Clip each observation into the corridor with shapely; skip anything with obscured
    coordinates (iNat randomises location ~20km for many threatened taxa) since those can't be
    clipped honestly — they're flagged `coords_obscured` in the output instead of dropped.
-5. Write two CSVs under `data/`: `<prefix>_observations.csv` (one row per sighting) and
-   `<prefix>_species.csv` (aggregated per species: total count, September-specific count,
-   peak months, one example photo/link).
+5. Write `<prefix>_observations.csv` under `data/`, one row per sighting.
 
-`data/vmm_observations.csv` and `data/vmm_species.csv` are the committed, checked-in outputs
-for the race route — `.gitignore` excludes everything else under `data/` but whitelists these
-two files specifically, since they're consumed by the published site rather than being
-throwaway build artifacts.
+`data/vmm_observations.csv` is the committed, checked-in output for the race route —
+`.gitignore` excludes everything else under `data/` but whitelists this file specifically,
+since it's consumed by the published site rather than being a throwaway build artifact.
 
 `index.html` is a static, buildless single-page app: PapaParse loads
-`data/vmm_observations.csv` client-side into a sortable/searchable/filterable table
-(`CONFIG` in the inline `<script>` drives columns, labels, and per-column renderers). It's
-served as-is via GitHub Pages from the `main` branch root — pushing to `main` redeploys.
+`data/vmm_observations.csv` client-side, then `dedupeByName` collapses it to one row per
+species (keyed on scientific name, falling back to common name), keeping only the most
+recent `observed_on`, before rendering into a sortable/filterable table (`CONFIG` in the
+inline `<script>` drives columns, labels, and per-column renderers). It's served as-is via
+GitHub Pages from the `main` branch root — pushing to `main` redeploys.

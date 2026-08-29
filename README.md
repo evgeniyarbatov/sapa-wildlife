@@ -26,9 +26,7 @@ make run GPX=vmm_100mi.gpx BUFFER=2.0
 | `make lint` / `make fmt` | ruff |
 | `make clean`  | delete generated CSVs |
 
-Each run writes two files under `data/`: a raw `*_observations.csv` and a
-`*_species.csv` summary sorted by frequency, with a **`sep_observations`** column
-(the race is mid-September) and month histogram.
+Each run writes a raw `*_observations.csv` under `data/`, one row per sighting.
 
 ## How the corridor works
 

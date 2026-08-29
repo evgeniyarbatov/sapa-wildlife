@@ -8,8 +8,7 @@ iNaturalist's public API has no polygon/linestring geo-filter, so the strategy i
      honest metric distances), e.g. "everything within 1.5 km of my route".
   3. Query the route's bounding box from the iNat API (cursor-paginated, no 10k cap).
   4. Clip every returned observation to the corridor with shapely.
-  5. Write a per-observation CSV and a species-summary CSV (with month histogram,
-     so you can see what's actually seen in September).
+  5. Write a per-observation CSV.
 
 Deps:  pip install requests shapely pyproj
 Usage:
@@ -31,7 +30,6 @@ import math
 import os
 import sys
 import time
-from collections import Counter, defaultdict
 
 import requests
 from pyproj import Transformer
@@ -53,9 +51,6 @@ TAXA = {
     "plants": 47126,      # Plantae
     "fungi": 47170,       # Fungi
 }
-MONTHS = ["", "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-          "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
-
 
 # ----------------------------------------------------------------------------- GPX
 
@@ -198,9 +193,7 @@ def main():
         corridor = to_utm = None
     print(f"Query bbox: {bbox}", file=sys.stderr)
 
-    obs_rows, species = [], defaultdict(lambda: {
-        "sci": "", "common": "", "group": "", "count": 0,
-        "months": Counter(), "obscured": 0, "photo": "", "example": ""})
+    obs_rows = []
 
     kept = 0
     for obs in iter_observations(bbox, taxon_id=taxon_id,
@@ -219,42 +212,22 @@ def main():
                 continue
 
         taxon = obs.get("taxon") or {}
-        tid = taxon.get("id", 0)
         sci = taxon.get("name", "")
         common = taxon.get("preferred_common_name", "") or ""
         group = taxon.get("iconic_taxon_name", "") or ""
-        month = None
-        if obs.get("observed_on"):
-            try:
-                month = int(obs["observed_on"][5:7])
-            except (ValueError, IndexError):
-                pass
 
         obs_rows.append([group, common, sci, f"{lat:.5f}", f"{lon:.5f}",
                          obs.get("observed_on") or "", "yes" if obscured else "no",
                          obs.get("uri", ""), photo_url(obs)])
-
-        s = species[tid]
-        s["sci"], s["common"], s["group"] = sci, common, group
-        s["count"] += 1
-        if month:
-            s["months"][month] += 1
-        if obscured:
-            s["obscured"] += 1
-        if not s["photo"]:
-            s["photo"] = photo_url(obs)
-        if not s["example"]:
-            s["example"] = obs.get("uri", "")
         kept += 1
 
-    print(f"Kept {kept} observations across {len(species)} species", file=sys.stderr)
+    print(f"Kept {kept} observations", file=sys.stderr)
 
     # ensure the output directory exists
     out_dir = os.path.dirname(args.out_prefix)
     if out_dir:
         os.makedirs(out_dir, exist_ok=True)
 
-    # --- per-observation CSV
     obs_path = f"{args.out_prefix}_observations.csv"
     with open(obs_path, "w", newline="", encoding="utf-8") as f:
         w = csv.writer(f)
@@ -262,20 +235,7 @@ def main():
                     "observed_on", "coords_obscured", "obs_url", "photo_url"])
         w.writerows(obs_rows)
 
-    # --- species-summary CSV (the run-useful one)
-    sum_path = f"{args.out_prefix}_species.csv"
-    with open(sum_path, "w", newline="", encoding="utf-8") as f:
-        w = csv.writer(f)
-        w.writerow(["group", "common_name", "scientific_name", "observations",
-                    "sep_observations", "peak_months", "coords_obscured",
-                    "example_photo", "example_obs"])
-        for s in sorted(species.values(), key=lambda d: -d["count"]):
-            peak = ", ".join(MONTHS[m] for m, _ in s["months"].most_common(3))
-            w.writerow([s["group"], s["common"], s["sci"], s["count"],
-                        s["months"].get(9, 0), peak, s["obscured"],
-                        s["photo"], s["example"]])
-
-    print(f"Wrote {obs_path} and {sum_path}")
+    print(f"Wrote {obs_path}")
 
 
 if __name__ == "__main__":

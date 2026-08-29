@@ -33,4 +33,4 @@ fmt: ## Format with ruff
 	$(UV) run ruff format .
 
 clean: ## Remove generated outputs
-	rm -rf data *_observations.csv *_species.csv
+	rm -rf data *_observations.csv
