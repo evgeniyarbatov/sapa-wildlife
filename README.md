@@ -1,26 +1,16 @@
 # sapa-wildlife
 
-Field wildlife reference for the **Vietnam Mountain Marathon 100-miler** (161 km, 8,800 m,
-around Sa Pa / Hoàng Liên National Park) — plus a small tool that pulls **iNaturalist
-observations along your actual race line** so you know what you might spot, and when.
+A small tool that pulls **iNaturalist observations along your actual race line** for the
+**Vietnam Mountain Marathon 100-miler** (161 km, 8,800 m, around Sa Pa / Hoàng Liên National
+Park), so you know what you might spot, and when.
 
-Two things live here:
-
-- **`reference/sapa_wildlife_field_reference.csv`** — a hand-curated, run-usable list of
-  birds, mammals, snakes, trees, flowers and more, each with field marks, habitat/elevation
-  band, notability, and an honest `spot_chance` tuned to a runner moving at pace (not a
-  patient birder). Snakes lead with venom status.
-- **`inat_corridor.py`** — clips iNaturalist observations to a buffered corridor around a
-  GPX route, so you get "what's on my trail" instead of "what's in the province".
+**`inat_corridor.py`** clips iNaturalist observations to a buffered corridor around a GPX
+route, so you get "what's on my trail" instead of "what's in the province".
 
 ## Quickstart (uv)
 
 ```bash
-# zero-config: pull observations recorded in the Sa Pa bounding box (no GPX needed)
-make bbox TAXON=birds
-
-# the real thing: clip to your race GPX (from VMM registration)
-make run GPX=vmm_100mi.gpx TAXON=birds BUFFER=2.0
+make run GPX=vmm_100mi.gpx BUFFER=2.0
 ```
 
 `uv` handles the Python version and dependencies — no manual venv.
@@ -59,6 +49,5 @@ iNaturalist's public API has no polygon filter, so the script:
 ## Data & attribution
 
 Observation data from **iNaturalist** (contributor-licensed; check per-observation licences
-before reuse). The curated reference draws on Hoàng Liên National Park / NW-Vietnam
-herpetofauna and biodiversity records. A GBIF variant of the corridor query (DOI-citable
-occurrence downloads) is a straightforward endpoint swap.
+before reuse). A GBIF variant of the corridor query (DOI-citable occurrence downloads) is a
+straightforward endpoint swap.

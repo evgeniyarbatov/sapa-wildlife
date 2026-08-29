@@ -71,31 +71,6 @@
 
   .wrap { max-width: 1100px; margin: 0 auto; padding: 0 20px 60px; }
 
-  nav.tabs {
-    display: flex;
-    gap: 6px;
-    border-bottom: 1px solid var(--border);
-    margin-bottom: 16px;
-    overflow-x: auto;
-  }
-  nav.tabs button {
-    appearance: none;
-    background: none;
-    border: none;
-    color: var(--muted);
-    font-size: 0.92rem;
-    font-weight: 600;
-    padding: 10px 14px;
-    cursor: pointer;
-    border-bottom: 2px solid transparent;
-    white-space: nowrap;
-  }
-  nav.tabs button.active {
-    color: var(--accent);
-    border-bottom-color: var(--accent);
-  }
-  nav.tabs button:hover { color: var(--text); }
-
   .toolbar {
     display: flex;
     flex-wrap: wrap;
@@ -160,9 +135,9 @@
   tbody tr:hover { background: var(--accent-weak); }
 
   .thumb {
-    width: 44px;
-    height: 44px;
-    border-radius: 6px;
+    width: 220px;
+    height: 220px;
+    border-radius: 8px;
     object-fit: cover;
     display: block;
     background: var(--chip);
@@ -198,16 +173,10 @@
 <body>
 <header>
   <h1>Sa Pa Wildlife</h1>
-  <p>Field reference and iNaturalist observations for the Vietnam Mountain Marathon 100-miler (Hoàng Liên National Park).</p>
+  <p>iNaturalist observations along the route for the Vietnam Mountain Marathon 100-miler (Hoàng Liên National Park).</p>
 </header>
 
 <div class="wrap">
-  <nav class="tabs" id="tabs">
-    <button data-tab="reference" class="active">Field reference</button>
-    <button data-tab="species">Species along the route</button>
-    <button data-tab="observations">Raw observations</button>
-  </nav>
-
   <div class="toolbar">
     <input type="search" id="search" placeholder="Search…">
     <select id="groupFilter"><option value="">All groups</option></select>
@@ -224,66 +193,36 @@
 </div>
 
 <footer>
-  Data: hand-curated field reference plus observations pulled from <a href="https://www.inaturalist.org" target="_blank" rel="noopener">iNaturalist</a> (contributor-licensed — check per-observation licences before reuse).
+  Data: observations pulled from <a href="https://www.inaturalist.org" target="_blank" rel="noopener">iNaturalist</a> (contributor-licensed — check per-observation licences before reuse).
   Source: <a href="https://github.com/evgeniyarbatov/sapa-wildlife" target="_blank" rel="noopener">sapa-wildlife</a>.
 </footer>
 
 <script>
-const DATASETS = {
-  reference: {
-    url: 'reference/sapa_wildlife_field_reference.csv',
-    columns: ['group','common_name','vietnamese_name','scientific_name','field_notes','habitat_zone','notable','spot_chance'],
-    labels: { common_name: 'Common name', vietnamese_name: 'Vietnamese name', scientific_name: 'Scientific name', field_notes: 'Field notes', habitat_zone: 'Habitat zone', spot_chance: 'Spot chance' },
-    render: {
-      scientific_name: v => v ? `<span class="sci">${esc(v)}</span>` : '',
-      spot_chance: v => v ? `<span class="chip">${esc(v)}</span>` : '',
-    },
-    searchCols: ['common_name','vietnamese_name','scientific_name','field_notes','habitat_zone','notable'],
-    defaultSort: { col: 'group', dir: 'asc' },
+const CONFIG = {
+  url: 'data/vmm_observations.csv',
+  columns: ['photo_url','group','common_name','scientific_name','observed_on','lat','lon','coords_obscured','obs_url'],
+  labels: { photo_url: '', common_name: 'Common name', scientific_name: 'Scientific name', observed_on: 'Observed on', coords_obscured: 'Obscured', obs_url: 'Link' },
+  render: {
+    photo_url: v => v ? `<img class="thumb" src="${esc(v)}" loading="lazy" alt="">` : '',
+    scientific_name: v => v ? `<span class="sci">${esc(v)}</span>` : '',
+    coords_obscured: v => (v === '1' || v === 'yes') ? '<span class="chip">obscured</span>' : '',
+    obs_url: v => v ? `<a href="${esc(v)}" target="_blank" rel="noopener">iNaturalist ↗</a>` : '',
   },
-  species: {
-    url: 'data/vmm_species.csv',
-    columns: ['example_photo','group','common_name','scientific_name','observations','sep_observations','peak_months','coords_obscured','example_obs'],
-    labels: { example_photo: '', common_name: 'Common name', scientific_name: 'Scientific name', observations: 'Obs.', sep_observations: 'Sep obs.', peak_months: 'Peak months', coords_obscured: 'Obscured', example_obs: 'Example' },
-    render: {
-      example_photo: v => v ? `<img class="thumb" src="${esc(v)}" loading="lazy" alt="">` : '',
-      scientific_name: v => v ? `<span class="sci">${esc(v)}</span>` : '',
-      coords_obscured: v => (v === '1' || v === 'yes') ? '<span class="chip">obscured</span>' : '',
-      example_obs: v => v ? `<a href="${esc(v)}" target="_blank" rel="noopener">iNaturalist ↗</a>` : '',
-    },
-    searchCols: ['common_name','scientific_name','group','peak_months'],
-    defaultSort: { col: 'observations', dir: 'desc', numeric: true },
-  },
-  observations: {
-    url: 'data/vmm_observations.csv',
-    columns: ['photo_url','group','common_name','scientific_name','observed_on','lat','lon','coords_obscured','obs_url'],
-    labels: { photo_url: '', common_name: 'Common name', scientific_name: 'Scientific name', observed_on: 'Observed on', coords_obscured: 'Obscured', obs_url: 'Link' },
-    render: {
-      photo_url: v => v ? `<img class="thumb" src="${esc(v)}" loading="lazy" alt="">` : '',
-      scientific_name: v => v ? `<span class="sci">${esc(v)}</span>` : '',
-      coords_obscured: v => (v === '1' || v === 'yes') ? '<span class="chip">obscured</span>' : '',
-      obs_url: v => v ? `<a href="${esc(v)}" target="_blank" rel="noopener">iNaturalist ↗</a>` : '',
-    },
-    searchCols: ['common_name','scientific_name','group'],
-    defaultSort: { col: 'observed_on', dir: 'desc' },
-  },
+  searchCols: ['common_name','scientific_name','group'],
+  defaultSort: { col: 'observed_on', dir: 'desc' },
 };
 
-let active = 'reference';
 let rows = [];
-let sortState = {};
-const cache = {};
+let sortState = { ...CONFIG.defaultSort };
 
 function esc(s) {
   return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
 
-async function loadDataset(name) {
-  if (cache[name]) return cache[name];
-  const res = await fetch(DATASETS[name].url);
+async function loadDataset() {
+  const res = await fetch(CONFIG.url);
   const text = await res.text();
   const parsed = Papa.parse(text, { header: true, skipEmptyLines: true });
-  cache[name] = parsed.data;
   return parsed.data;
 }
 
@@ -307,33 +246,32 @@ function sortRows(data, col, dir, numeric) {
   });
 }
 
-function renderHead(config) {
+function renderHead() {
   const headRow = document.getElementById('headRow');
   headRow.innerHTML = '';
-  for (const col of config.columns) {
+  for (const col of CONFIG.columns) {
     const th = document.createElement('th');
-    const label = config.labels[col] ?? (col.charAt(0).toUpperCase() + col.slice(1).replace(/_/g, ' '));
+    const label = CONFIG.labels[col] ?? (col.charAt(0).toUpperCase() + col.slice(1).replace(/_/g, ' '));
     th.dataset.col = col;
     th.innerHTML = label + (sortState.col === col ? `<span class="arrow">${sortState.dir === 'asc' ? '▲' : '▼'}</span>` : '');
     th.addEventListener('click', () => {
-      const numeric = ['lat','lon','observations','sep_observations'].includes(col);
+      const numeric = ['lat','lon'].includes(col);
       sortState = { col, dir: sortState.col === col && sortState.dir === 'asc' ? 'desc' : 'asc', numeric };
       renderBody();
-      renderHead(config);
+      renderHead();
     });
     headRow.appendChild(th);
   }
 }
 
 function renderBody() {
-  const config = DATASETS[active];
   const search = document.getElementById('search').value.trim().toLowerCase();
   const group = document.getElementById('groupFilter').value;
 
   let data = rows;
   if (group) data = data.filter(r => r.group === group);
   if (search) {
-    data = data.filter(r => config.searchCols.some(c => String(r[c] ?? '').toLowerCase().includes(search)));
+    data = data.filter(r => CONFIG.searchCols.some(c => String(r[c] ?? '').toLowerCase().includes(search)));
   }
   if (sortState.col) {
     data = sortRows(data, sortState.col, sortState.dir, sortState.numeric);
@@ -353,9 +291,9 @@ function renderBody() {
   const frag = document.createDocumentFragment();
   for (const r of data) {
     const tr = document.createElement('tr');
-    for (const col of config.columns) {
+    for (const col of CONFIG.columns) {
       const td = document.createElement('td');
-      const renderer = config.render[col];
+      const renderer = CONFIG.render[col];
       td.innerHTML = renderer ? renderer(r[col]) : esc(r[col]);
       tr.appendChild(td);
     }
@@ -364,23 +302,17 @@ function renderBody() {
   body.appendChild(frag);
 }
 
-async function switchTab(name) {
-  active = name;
-  document.querySelectorAll('#tabs button').forEach(b => b.classList.toggle('active', b.dataset.tab === name));
-  const config = DATASETS[name];
-  sortState = config.defaultSort ? { ...config.defaultSort } : {};
-  document.getElementById('search').value = '';
-  rows = await loadDataset(name);
+async function init() {
+  rows = await loadDataset();
   populateGroupFilter(rows);
-  renderHead(config);
+  renderHead();
   renderBody();
 }
 
-document.querySelectorAll('#tabs button').forEach(b => b.addEventListener('click', () => switchTab(b.dataset.tab)));
 document.getElementById('search').addEventListener('input', renderBody);
 document.getElementById('groupFilter').addEventListener('change', renderBody);
 
-switchTab('reference');
+init();
 </script>
 </body>
 </html>
