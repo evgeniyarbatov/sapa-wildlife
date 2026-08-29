@@ -4,8 +4,10 @@ A small tool that pulls **iNaturalist observations along your actual race line**
 **Vietnam Mountain Marathon 100-miler** (161 km, 8,800 m, around Sa Pa / Hoàng Liên National
 Park), so you know what you might spot, and when.
 
-**`inat_corridor.py`** clips iNaturalist observations to a buffered corridor around a GPX
-route, so you get "what's on my trail" instead of "what's in the province".
+**`scripts/inat_corridor.py`** clips iNaturalist observations to a buffered corridor around a
+GPX route, so you get "what's on my trail" instead of "what's in the province". **`pages/`**
+holds the published site (GitHub Pages, deployed by `.github/workflows/pages.yml`) and the
+CSV data it reads.
 
 ## Quickstart (uv)
 
@@ -21,12 +23,11 @@ make run GPX=vmm_100mi.gpx BUFFER=2.0
 |---------------|--------------|
 | `make help`   | list targets |
 | `make install`| create the venv + install deps (`uv sync`) |
-| `make bbox`   | query the whole Sa Pa box — no GPX required |
 | `make run`    | clip observations to a GPX corridor |
 | `make lint` / `make fmt` | ruff |
 | `make clean`  | delete generated CSVs |
 
-Each run writes a raw `*_observations.csv` under `data/`, one row per sighting.
+Each run writes a raw `*_observations.csv` under `pages/data/`, one row per sighting.
 
 ## How the corridor works
 

@@ -12,9 +12,8 @@ iNaturalist's public API has no polygon/linestring geo-filter, so the strategy i
 
 Deps:  pip install requests shapely pyproj
 Usage:
-  python inat_corridor.py --gpx vmm_100mi.gpx --buffer 1.5 --taxon birds --out-prefix vmm_birds
-  python inat_corridor.py --gpx vmm_100mi.gpx --buffer 1.5                 # all taxa
-  python inat_corridor.py --bbox 22.25 103.70 22.42 103.90 --taxon reptiles  # no GPX, raw box
+  python scripts/inat_corridor.py --gpx vmm_100mi.gpx --buffer 1.5                 # all taxa
+  python scripts/inat_corridor.py --bbox 22.25 103.70 22.42 103.90 --taxon reptiles  # no GPX, raw box
 
 Notes:
   * quality_grade defaults to "research" and captive/cultivated records are excluded.
