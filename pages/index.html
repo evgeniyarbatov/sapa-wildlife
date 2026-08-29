@@ -254,7 +254,7 @@ const CONFIG = {
       : `<span class="sci">${esc(r.scientific_name)}</span>`,
     obs_url: v => v ? `<a href="${esc(v)}" target="_blank" rel="noopener">iNaturalist ↗</a>` : '',
   },
-  defaultSort: { col: 'group', dir: 'asc' },
+  defaultSort: { col: 'common_name', dir: 'asc' },
 };
 
 let rows = [];
@@ -303,10 +303,15 @@ function populateGroupFilter(data) {
   }
 }
 
+function sortValue(r, col) {
+  if (col === 'common_name') return r.common_name || r.scientific_name || '';
+  return r[col] ?? '';
+}
+
 function sortRows(data, col, dir, numeric) {
   const mult = dir === 'asc' ? 1 : -1;
   return [...data].sort((a, b) => {
-    let av = a[col] ?? '', bv = b[col] ?? '';
+    let av = sortValue(a, col), bv = sortValue(b, col);
     if (numeric) { av = parseFloat(av) || 0; bv = parseFloat(bv) || 0; return (av - bv) * mult; }
     return String(av).localeCompare(String(bv)) * mult;
   });
