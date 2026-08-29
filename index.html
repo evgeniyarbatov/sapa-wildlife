@@ -189,15 +189,14 @@
 <script>
 const CONFIG = {
   url: 'data/vmm_observations.csv',
-  columns: ['photo_url','group','common_name','scientific_name','observed_on','obs_url'],
-  labels: { photo_url: '', common_name: 'Common name', scientific_name: 'Scientific name', observed_on: 'Observed on', obs_url: 'Link' },
+  columns: ['photo_url','group','common_name','obs_url'],
+  labels: { photo_url: '', common_name: 'Name', obs_url: 'Link' },
   render: {
     photo_url: v => v ? `<img class="thumb" src="${esc(v)}" loading="lazy" alt="">` : '',
-    scientific_name: v => v ? `<span class="sci">${esc(v)}</span>` : '',
-    coords_obscured: v => (v === '1' || v === 'yes') ? '<span class="chip">obscured</span>' : '',
+    common_name: (v, r) => `${esc(v)}${r.scientific_name ? ` <span class="sci">(${esc(r.scientific_name)})</span>` : ''}`,
     obs_url: v => v ? `<a href="${esc(v)}" target="_blank" rel="noopener">iNaturalist ↗</a>` : '',
   },
-  defaultSort: { col: 'observed_on', dir: 'desc' },
+  defaultSort: { col: 'group', dir: 'asc' },
 };
 
 let rows = [];
@@ -277,7 +276,7 @@ function renderBody() {
     for (const col of CONFIG.columns) {
       const td = document.createElement('td');
       const renderer = CONFIG.render[col];
-      td.innerHTML = renderer ? renderer(r[col]) : esc(r[col]);
+      td.innerHTML = renderer ? renderer(r[col], r) : esc(r[col]);
       tr.appendChild(td);
     }
     frag.appendChild(tr);
