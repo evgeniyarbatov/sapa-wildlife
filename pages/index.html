@@ -250,7 +250,7 @@ const CONFIG = {
   render: {
     photo_url: v => v ? `<img class="thumb" src="${esc(v)}" loading="lazy" alt="">` : '',
     common_name: (v, r) => v
-      ? `${esc(v)}${r.scientific_name ? ` <span class="sci">(${esc(r.scientific_name)})</span>` : ''}`
+      ? `${esc(capitalize(v))}${r.scientific_name ? ` <span class="sci">(${esc(r.scientific_name)})</span>` : ''}`
       : `<span class="sci">${esc(r.scientific_name)}</span>`,
     obs_url: v => v ? `<a href="${esc(v)}" target="_blank" rel="noopener">iNaturalist ↗</a>` : '',
   },
@@ -262,6 +262,10 @@ let sortState = { ...CONFIG.defaultSort };
 
 function esc(s) {
   return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function capitalize(s) {
+  return s ? s.charAt(0).toUpperCase() + s.slice(1) : s;
 }
 
 function dedupeByName(data) {
