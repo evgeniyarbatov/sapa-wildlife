@@ -249,7 +249,9 @@ const CONFIG = {
   labels: { photo_url: '', common_name: 'Name', obs_url: 'Link' },
   render: {
     photo_url: v => v ? `<img class="thumb" src="${esc(v)}" loading="lazy" alt="">` : '',
-    common_name: (v, r) => `${esc(v)}${r.scientific_name ? ` <span class="sci">(${esc(r.scientific_name)})</span>` : ''}`,
+    common_name: (v, r) => v
+      ? `${esc(v)}${r.scientific_name ? ` <span class="sci">(${esc(r.scientific_name)})</span>` : ''}`
+      : `<span class="sci">${esc(r.scientific_name)}</span>`,
     obs_url: v => v ? `<a href="${esc(v)}" target="_blank" rel="noopener">iNaturalist ↗</a>` : '',
   },
   defaultSort: { col: 'group', dir: 'asc' },
