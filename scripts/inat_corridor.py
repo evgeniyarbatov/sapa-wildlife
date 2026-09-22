@@ -105,6 +105,27 @@ def corridor_bbox(coords, buffer_km):
 
 # ----------------------------------------------------------------------------- iNat
 
+def fetch_page(session, params, attempts=5):
+    """GET one iNat page. A dropped connection otherwise abandons the whole cursor."""
+    delay = 2.0
+    for attempt in range(attempts):
+        try:
+            response = session.get(INAT, params=params, timeout=60)
+            response.raise_for_status()
+            return response
+        except (requests.ConnectionError, requests.Timeout) as exc:
+            if attempt + 1 == attempts:
+                raise
+            print(f"  {exc.__class__.__name__}; retrying in {delay:.0f}s", file=sys.stderr)
+        except requests.HTTPError as exc:
+            status = exc.response.status_code if exc.response is not None else None
+            if status not in (429, 500, 502, 503, 504) or attempt + 1 == attempts:
+                raise
+            print(f"  HTTP {status}; retrying in {delay:.0f}s", file=sys.stderr)
+        time.sleep(delay)
+        delay *= 2
+
+
 def iter_observations(bbox, taxon_id=None, quality_grade="research",
                       exclude_captive=True, per_page=200, pause=0.7, verbose=True):
     """Yield observation dicts inside bbox, cursor-paginated by id (no 10k cap)."""
@@ -125,8 +146,7 @@ def iter_observations(bbox, taxon_id=None, quality_grade="research",
     id_above, fetched = 0, 0
     while True:
         params["id_above"] = id_above
-        r = session.get(INAT, params=params, timeout=60)
-        r.raise_for_status()
+        r = fetch_page(session, params)
         results = r.json().get("results", [])
         if not results:
             break
