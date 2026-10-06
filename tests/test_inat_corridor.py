@@ -5,9 +5,8 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "scripts"))
 
-from shapely.geometry import Point  # noqa: E402
-
-import inat_corridor as ic  # noqa: E402
+import inat_corridor as ic
+from shapely.geometry import Point
 
 GPX = """<?xml version="1.0"?>
 <gpx xmlns="http://www.topografix.com/GPX/1/1" version="1.1">

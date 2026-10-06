@@ -150,8 +150,7 @@ def iter_observations(bbox, taxon_id=None, quality_grade="research",
         results = r.json().get("results", [])
         if not results:
             break
-        for obs in results:
-            yield obs
+        yield from results
         fetched += len(results)
         id_above = max(o["id"] for o in results)
         if verbose:
