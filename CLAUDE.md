@@ -13,6 +13,7 @@ Mountain Marathon 100-miler around Sa Pa / Hoàng Liên National Park, plus a st
 ```bash
 make install                                    # uv sync
 make run GPX=vmm_100mi.gpx [TAXON=birds] [BUFFER=1.5]   # clip to a GPX corridor
+make test                                       # offline unit tests
 make lint                                       # ruff check
 make fmt                                        # ruff format
 make clean                                      # rm pages/data/ and stray *_observations.csv
@@ -24,7 +25,7 @@ GPX, run directly (not wired into a make target).
 `TAXON` must be one of the keys in `TAXA` in `scripts/inat_corridor.py` (`snakes`, `reptiles`,
 `amphibians`, `birds`, `mammals`, `insects`, `plants`, `fungi`). Omit it to pull all taxa.
 
-There is no test suite.
+Tests in `tests/` cover the pure helpers only (no network).
 
 ## Architecture
 

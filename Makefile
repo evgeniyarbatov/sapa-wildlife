@@ -9,7 +9,7 @@ TAXON_ARG := $(if $(TAXON),--taxon $(TAXON),)
 
 .DEFAULT_GOAL := help
 
-.PHONY: help install run lint fmt clean
+.PHONY: help install run test lint fmt clean
 
 help: ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## ' $(MAKEFILE_LIST) | \
@@ -21,6 +21,9 @@ install: ## Create the venv and install deps with uv
 run: install ## Route corridor: make run GPX=vmm_100mi.gpx [TAXON=birds] [BUFFER=1.5]
 	@test -n "$(GPX)" || { echo "Set GPX=path/to/route.gpx"; exit 1; }
 	$(UV) run python scripts/inat_corridor.py --gpx "$(GPX)" --buffer $(BUFFER) $(TAXON_ARG) --out-prefix "$(OUT)"
+
+test: install ## Run unit tests (offline)
+	$(UV) run python -m unittest discover -s tests
 
 lint: ## Lint with ruff
 	$(UV) run ruff check .
