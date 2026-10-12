@@ -9,6 +9,12 @@ GPX route, so you get "what's on my trail" instead of "what's in the province". 
 holds the published site (GitHub Pages, deployed by `.github/workflows/pages.yml`) and the
 CSV data it reads.
 
+## Status
+
+| Folder | Status | Last touched | Next step |
+|---|---|---|---|
+| root | active | 2026-10-06 | — |
+
 ## Quickstart (uv)
 
 ```bash
