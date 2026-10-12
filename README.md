@@ -13,7 +13,7 @@ CSV data it reads.
 
 | Folder | Status | Last touched | Next step |
 |---|---|---|---|
-| root | active | 2026-10-06 | — |
+| root | active | 2026-09-22 | — |
 
 ## Quickstart (uv)
 
