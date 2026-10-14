@@ -11,12 +11,11 @@ Mountain Marathon 100-miler around Sa Pa / Hoàng Liên National Park, plus a st
 ## Commands
 
 ```bash
-make install                                    # uv sync
+make setup                                      # uv sync
 make run GPX=vmm_100mi.gpx [TAXON=birds] [BUFFER=1.5]   # clip to a GPX corridor
 make test                                       # offline unit tests
 make lint                                       # ruff check
 make fmt                                        # ruff format
-make clean                                      # rm pages/data/ and stray *_observations.csv
 ```
 
 `scripts/inat_corridor.py` also supports a raw `--bbox SWLAT SWLON NELAT NELON` query with no

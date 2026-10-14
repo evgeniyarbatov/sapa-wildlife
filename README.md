@@ -22,10 +22,9 @@ make run GPX=vmm_100mi.gpx BUFFER=2.0
 | target        | what it does |
 |---------------|--------------|
 | `make help`   | list targets |
-| `make install`| create the venv + install deps (`uv sync`) |
+| `make setup`| create the venv + install deps (`uv sync`) |
 | `make run`    | clip observations to a GPX corridor |
 | `make lint` / `make fmt` | ruff |
-| `make clean`  | delete generated CSVs |
 
 Each run writes a raw `*_observations.csv` under `pages/data/`, one row per sighting.
 
